@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import CurrencyBar from "./components/CurrencyBar";
+import ShowCurrencies from "./components/ShowCurrencies";
 
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 const BASE_URL = "http://forex.cbm.gov.mm/api/latest";
@@ -9,9 +10,21 @@ function App() {
   let [datas, setDatas] = useState();
   let [countries, setCountries] = useState([]);
   let [loading, setLoading] = useState(true);
-  let [fromCountry, setFromCountry] = useState("USD");
-  let [fromCountryRate, setFromCountryRate] = useState(1);
-  let [myanmrRate, setMyanmarRate] = useState();
+
+  let [toFromChange, setToFromChange] = useState(true);
+  let [rate, setRate] = useState();
+  let [fromCountry, setFromCountry] = useState();
+  let [amount, setAmount] = useState(1);
+
+  let myanmarAmount, countryAmount;
+
+  if (toFromChange) {
+    countryAmount = amount;
+    myanmarAmount = amount * rate;
+  } else {
+    myanmarAmount = amount;
+    countryAmount = myanmarAmount / rate;
+  }
 
   useEffect(() => {
     fetch(proxyurl + BASE_URL)
@@ -19,19 +32,26 @@ function App() {
       .then((data) => {
         setDatas(data.rates);
         setCountries(Object.keys(data.rates));
-        setMyanmarRate(
-          parseFloat(data.rates[fromCountry].replace(/,/g, "")) *
-            fromCountryRate
-        );
+        setRate(parseFloat(data.rates["USD"].replace(/,/g, "")));
         setLoading(false);
       });
   }, []);
 
   useEffect(() => {
-    if (datas) {
-      setMyanmarRate(datas[fromCountry].replace(/,/g, "") * fromCountryRate);
+    if (fromCountry != null) {
+      setRate(parseFloat(datas[fromCountry].replace(/,/g, "")));
     }
-  }, [datas, fromCountryRate]);
+  }, [fromCountry, datas]);
+
+  function handleCountryAmount(e) {
+    setAmount(e.target.value);
+    setToFromChange(true);
+  }
+
+  function handleMyanmarAmount(e) {
+    setAmount(e.target.value);
+    setToFromChange(false);
+  }
 
   return (
     <>
@@ -42,10 +62,16 @@ function App() {
         <>
           <CurrencyBar
             countries={countries}
-            rate={fromCountryRate}
-            changeRate={(e) => setFromCountryRate(e.target.value)}
+            amount={countryAmount}
+            changeAmount={handleCountryAmount}
+            changeCountry={(e) => setFromCountry(e.target.value)}
           />
-          <CurrencyBar countries={["Myan"]} rate={myanmrRate} />
+          <CurrencyBar
+            countries={["Myan"]}
+            amount={myanmarAmount}
+            changeAmount={handleMyanmarAmount}
+          />
+          <ShowCurrencies />
         </>
       )}
     </>
