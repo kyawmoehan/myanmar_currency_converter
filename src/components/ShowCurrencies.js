@@ -20,7 +20,7 @@ const ShowCurrencies = React.memo(() => {
       </p>
     );
   });
-  console.log("h");
+
   return (
     <div>
       <h2>Currencies</h2>

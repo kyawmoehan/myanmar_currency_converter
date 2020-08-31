@@ -54,27 +54,38 @@ function App() {
   }
 
   return (
-    <>
-      <h1>Myanmar Currency Converter</h1>
+    <div className="container">
       {loading ? (
-        <h3>Loading</h3>
+        <div className="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
       ) : (
-        <>
-          <CurrencyBar
-            countries={countries}
-            amount={countryAmount}
-            changeAmount={handleCountryAmount}
-            changeCountry={(e) => setFromCountry(e.target.value)}
-          />
-          <CurrencyBar
-            countries={["Myan"]}
-            amount={myanmarAmount}
-            changeAmount={handleMyanmarAmount}
-          />
+        <div>
+          <div className="converter">
+            <h1 className="title">Myanmar Currency Converter</h1>
+            <CurrencyBar
+              countries={countries}
+              amount={countryAmount}
+              changeAmount={handleCountryAmount}
+              changeCountry={(e) => setFromCountry(e.target.value)}
+            />
+            <CurrencyBar
+              countries={["MMK"]}
+              amount={myanmarAmount}
+              changeAmount={handleMyanmarAmount}
+            />
+          </div>
           <ShowCurrencies />
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 }
 
